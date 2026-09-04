@@ -200,7 +200,14 @@ export function AppProvider({
 
   /* conversations */
   const [conversations, setConversations] = useState<Conversation[]>(() =>
-    readStored<Conversation[]>(CONVOS_KEY, []),
+    // Migrate anything persisted before `messages` existed.
+    readStored<Array<Partial<Conversation> & Pick<Conversation, "name">>>(CONVOS_KEY, []).map((c) => ({
+      name: c.name,
+      last: c.last ?? "",
+      when: c.when ?? "",
+      unread: !!c.unread,
+      messages: c.messages ?? [],
+    })),
   );
   useEffect(() => writeStored(CONVOS_KEY, conversations), [conversations]);
   const unreadCount = conversations.filter((c) => c.unread).length;
@@ -231,20 +238,26 @@ export function AppProvider({
     if (names.length === 0 || !text) return;
     setConversations((cs) => {
       const rest = cs.filter((c) => !names.includes(c.name));
-      return [
-        ...names.map((name) => ({ name, last: text, when: "Just now", unread: false })),
-        ...rest,
-      ];
+      const updated = names.map((name) => {
+        const existing = cs.find((c) => c.name === name);
+        const messages = [...(existing?.messages ?? []), { from: "me" as const, text, when: "Just now" }];
+        return { name, last: text, when: "Just now", unread: false, messages };
+      });
+      return [...updated, ...rest];
     });
     setComposerTo([]);
-    // Staggered canned replies, one per recipient.
+    // Staggered canned replies, one per recipient — appended to that thread's history.
     names.forEach((name, i) => {
       window.setTimeout(async () => {
         const { reply } = await api.sendMessage(name, text);
         const t = window.setTimeout(() => {
           setConversations((cs) => {
-            const rest = cs.filter((c) => c.name !== name);
-            return [{ name, last: reply, when: "Just now", unread: true }, ...rest];
+            const idx = cs.findIndex((c) => c.name === name);
+            if (idx < 0) return cs;
+            const conv = cs[idx];
+            const messages = [...conv.messages, { from: "them" as const, text: reply, when: "Just now" }];
+            const rest = cs.filter((_, i2) => i2 !== idx);
+            return [{ ...conv, last: reply, when: "Just now", unread: true, messages }, ...rest];
           });
         }, 3500 + i * 1200);
         timers.current.push(t);

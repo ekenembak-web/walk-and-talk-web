@@ -158,7 +158,11 @@ public/assets/         section + activity photography (licensed stock — verify
 - **Applications** — listener + host forms with the prototype's validation
   (disabled until required fields + agreement), success state, photo preview
 - **Messages** — composer, canned auto-reply after 3.5s, unread badge,
-  conversations persisted to `localStorage`
+  conversations persisted to `localStorage`. On mobile web, tapping an existing
+  conversation opens a **full-screen chat thread** (`MobileChatThread`) with
+  the real message history and a reply box, instead of the single-message
+  composer — matching the listener and app surfaces. Starting a brand-new
+  conversation (from Find or a profile) still goes through the composer.
 - **Modals** — Escape to close, backdrop click, focus move-in + basic trap
 - **App shell (`/app`)** — welcome overlay, 5-tab bar, bottom sheets, threaded
   chat (tab bar hides in a thread), heart-toggled favorites, guest vs signed-in

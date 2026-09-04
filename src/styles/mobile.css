@@ -608,6 +608,70 @@
 .m-convo-dot { flex: 0 0 9px; width: 9px; height: 9px; border-radius: 999px; background: var(--accent); }
 .m-empty { text-align: center; color: var(--ink-soft); font-size: 14.5px; padding: 36px 0; }
 
+/* ---- Full-screen chat thread (tapping a conversation in Messages) ---- */
+.m-chat-full {
+  position: fixed;
+  inset: 0;
+  z-index: 220;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+}
+.m-chat-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  flex-shrink: 0;
+}
+.m-chat-back { background: none; border: none; font-size: 20px; color: var(--ink); cursor: pointer; padding: 0 2px 0 0; }
+.m-chat-avatar { width: 36px; height: 36px; border-radius: 999px; background-size: cover; background-position: center; flex-shrink: 0; }
+.m-chat-name { font-size: 15.5px; font-weight: 600; }
+.m-chat-scroll { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.m-chat-opener { font-size: 13px; color: var(--ink-faint); text-align: center; margin: 0 0 6px; }
+.m-chat-row { display: flex; }
+.m-chat-row--me { justify-content: flex-end; }
+.m-chat-row--them { justify-content: flex-start; }
+.m-chat-bubble { max-width: 78%; padding: 11px 15px; font-size: 14.5px; line-height: 1.5; border-radius: 18px; }
+.m-chat-bubble--me { background: var(--accent); color: #fff; border-bottom-right-radius: 6px; }
+.m-chat-bubble--them { background: var(--card-bg); color: var(--ink); border: 1px solid var(--border); border-bottom-left-radius: 6px; }
+.m-chat-input-row {
+  display: flex;
+  gap: 8px;
+  padding: 10px 16px;
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+  flex-shrink: 0;
+}
+.m-chat-input {
+  flex: 1;
+  padding: 11px 15px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--ink);
+  font-size: 14.5px;
+  font-family: var(--font);
+  outline: none;
+}
+.m-chat-send {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 0 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font);
+  flex-shrink: 0;
+}
+.m-chat-send[disabled] { background: var(--border); color: var(--ink-faint); cursor: default; }
+
 /* ---- My activity (host listing) ---- */
 .m-myact-card {
   background: var(--card-bg);

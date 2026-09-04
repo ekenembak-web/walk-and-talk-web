@@ -41,11 +41,20 @@ export interface Host extends Listener {
   bring: string;
 }
 
+export interface ThreadMsg {
+  from: "me" | "them";
+  text: string;
+  when: string;
+}
+
 export interface Conversation {
   name: string;
   last: string;
   when: string;
   unread: boolean;
+  /** Full message history, oldest first. Older conversations persisted before
+   *  this field existed may not have it — treat as `[]` when reading. */
+  messages: ThreadMsg[];
 }
 
 export interface ListenerApplication {
