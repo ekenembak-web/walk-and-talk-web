@@ -81,6 +81,18 @@ npm run dev      # http://localhost:5173
 npm run build    # tsc -b && vite build
 ```
 
+## Deploy
+
+Static SPA — any static host works. `vercel.json` ships an SPA rewrite so deep
+links (`/app`, `/listener`, `/moderator`, …) survive a refresh. On Vercel:
+*Add New → Project → import the repo*, framework preset **Vite**, no other
+config. Every push to `main` redeploys.
+
+## Backend
+
+There is none — every screen reads through `src/data/api.ts` (mock data). The
+API a real build needs is specced in [`docs/BACKEND.md`](docs/BACKEND.md).
+
 ## Layout
 
 ```
