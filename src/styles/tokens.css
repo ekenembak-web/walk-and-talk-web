@@ -1,0 +1,86 @@
+/* Walk&Talk design tokens.
+ * Brand palette -> semantic tokens, resolved by theme.
+ * Light values live on :root. Dark values are redefined in two guarded blocks
+ * so both the OS default and an explicit toggle resolve correctly. */
+
+:root {
+  /* Brand palette (constant across themes) */
+  --wine: #f50537;
+  --offwhite: #e9e9e9;
+  --blue: #d1e2f4;
+  --near-black: #2a2d32;
+  --white: #ffffff;
+
+  /* Semantic — light */
+  --bg: #e9e9e9;
+  --bg-alt: #ffffff;
+  --card-bg: #ffffff;
+  --ink: #2a2d32;
+  --ink-soft: rgba(42, 45, 50, 0.68);
+  --ink-faint: rgba(42, 45, 50, 0.45);
+  --accent: #f50537;
+  --accent-soft: rgba(245, 5, 55, 0.08);
+  --teal: #3f5871;
+  --teal-soft: rgba(209, 226, 244, 0.75);
+  --border: rgba(42, 45, 50, 0.12);
+  --glass-bg: rgba(233, 233, 233, 0.9);
+  --glass-border: rgba(255, 255, 255, 0.6);
+  --overlay: rgba(42, 45, 50, 0.12);
+  --shadow: 0 8px 24px rgba(42, 45, 50, 0.1);
+
+  /* Badge inks (theme-sensitive in the prototype) */
+  --badge-listener-bg: rgba(129, 171, 188, 0.35);
+  --badge-listener-ink: #2f4a57;
+  --badge-host-bg: rgba(77, 94, 56, 0.18);
+  --badge-host-ink: #2a2d32;
+
+  /* Type */
+  --font: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+  --serif: Georgia, "Times New Roman", serif;
+
+  /* Layout */
+  --content-max: 1240px;
+  --content-pad: 32px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #2a2d32;
+    --bg-alt: #363a3f;
+    --card-bg: #363a3f;
+    --ink: #e9e9e9;
+    --ink-soft: rgba(233, 233, 233, 0.68);
+    --ink-faint: rgba(233, 233, 233, 0.45);
+    --accent: #ff5c7a;
+    --accent-soft: rgba(245, 5, 55, 0.26);
+    --teal: #d1e2f4;
+    --teal-soft: rgba(209, 226, 244, 0.16);
+    --border: rgba(233, 233, 233, 0.14);
+    --glass-bg: rgba(42, 45, 50, 0.75);
+    --glass-border: rgba(233, 233, 233, 0.14);
+    --overlay: rgba(42, 45, 50, 0.55);
+    --shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+    --badge-listener-ink: #d1e2f4;
+    --badge-host-ink: #a9c088;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #2a2d32;
+  --bg-alt: #363a3f;
+  --card-bg: #363a3f;
+  --ink: #e9e9e9;
+  --ink-soft: rgba(233, 233, 233, 0.68);
+  --ink-faint: rgba(233, 233, 233, 0.45);
+  --accent: #ff5c7a;
+  --accent-soft: rgba(245, 5, 55, 0.26);
+  --teal: #d1e2f4;
+  --teal-soft: rgba(209, 226, 244, 0.16);
+  --border: rgba(233, 233, 233, 0.14);
+  --glass-bg: rgba(42, 45, 50, 0.75);
+  --glass-border: rgba(233, 233, 233, 0.14);
+  --overlay: rgba(42, 45, 50, 0.55);
+  --shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+  --badge-listener-ink: #d1e2f4;
+  --badge-host-ink: #a9c088;
+}
