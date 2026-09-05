@@ -10,6 +10,7 @@ import { AppShell } from "./app/AppShell";
 import { ListenerWebShell } from "./listener/ListenerWebShell";
 import { ListenerAppShell } from "./listener/ListenerAppShell";
 import { ModeratorConsole } from "./moderator/ModeratorConsole";
+import { DevSwitcher } from "./dev/DevSwitcher";
 
 /** Reset scroll on navigation, unless we're targeting an in-page anchor. */
 function ScrollToTop() {
@@ -46,6 +47,7 @@ export default function App() {
         <Route path="/app/*" element={<AppShell />} />
         <Route path="/*" element={<WebShell />} />
       </Routes>
+      <DevSwitcher />
     </AppProvider>
   );
 }

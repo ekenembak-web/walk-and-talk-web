@@ -18,6 +18,13 @@ as one codebase with role-based routing.
 
 `/listener?status=pending` shows the application-pending screen.
 
+**There is no login or role system yet**, so nothing links these route trees
+together — a small floating switcher (bottom-right-ish, right-center edge;
+`src/dev/DevSwitcher.tsx`) jumps between them for review purposes. It is
+explicitly temporary scaffolding: delete it (and its two import lines in
+`App.tsx` / `main.tsx`) once real auth resolves a role and the client routes
+accordingly, per the handoff.
+
 ## Seeker: three shells, one core
 
 `WebShell` splits by viewport (`useIsMobile`, 768px):
