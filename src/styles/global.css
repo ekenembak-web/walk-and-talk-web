@@ -7,7 +7,11 @@
 
 * { box-sizing: border-box; }
 
-html { color-scheme: light dark; }
+html {
+  color-scheme: light dark;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
 
 body {
   margin: 0;
@@ -15,6 +19,19 @@ body {
   background: var(--bg);
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Mobile Safari zooms the whole page in when a focused input's text is
+   smaller than 16px, which shoves fixed layouts (like the chat bar) off
+   screen. Force every control to 16px on touch devices — the on-screen
+   size barely changes but the zoom never triggers. */
+@media (pointer: coarse) {
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
 }
 
 ::selection { background: rgba(87, 165, 184, 0.35); }
