@@ -14,7 +14,7 @@ export function AboutPage() {
 
       <section className="section-split">
         <div className="split-image-wrap">
-          <img className="split-image" src="/assets/about-hero-bench.jpg" alt="Two older men sitting on a park bench, talking" />
+          <img className="split-image split-image--full" src="/assets/about-hero-bench.jpg" alt="Two older men sitting on a park bench, talking" />
           <div className="image-overlay" />
         </div>
         <div>

@@ -497,6 +497,11 @@ img { max-width: 100%; }
   filter: grayscale(0.5) contrast(1.05);
 }
 
+/* Show the whole portrait photo — no crop, no cut-off heads. */
+.split-image--full {
+  height: auto;
+}
+
 .image-overlay {
   position: absolute;
   inset: 0;

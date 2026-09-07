@@ -13,7 +13,7 @@ export function MobileAboutPage() {
 
       <section className="m-split m-split--image-first">
         <div className="m-split-image-wrap">
-          <img className="m-split-image" src="/assets/about-hero-bench.jpg" alt="Two older men sitting on a park bench in conversation" />
+          <img className="m-split-image m-split-image--full" src="/assets/about-hero-bench.jpg" alt="Two older men sitting on a park bench in conversation" />
           <div className="m-split-image-overlay" />
         </div>
         <div>
