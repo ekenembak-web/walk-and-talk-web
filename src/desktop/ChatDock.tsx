@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useApp } from "../state/store";
 import { avatarUri } from "../lib/avatar";
+import { SendIcon } from "../components/icons";
 
 /**
  * Desktop chat — a docked widget in the bottom-right, not a modal. Opens for a
@@ -82,19 +83,26 @@ export function ChatDock() {
               ))}
             </div>
             <div className="chat-dock-input-row">
-              <textarea
-                className="chat-dock-input"
-                rows={1}
-                placeholder="Message…"
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
-                }}
-              />
-              <button className="chat-dock-send" onClick={send} disabled={!text.trim()}>
-                Send
-              </button>
+              <div className="chat-dock-input-wrap">
+                <textarea
+                  className="chat-dock-input"
+                  rows={1}
+                  placeholder="Message…"
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
+                  }}
+                />
+                <button
+                  className="chat-dock-send"
+                  aria-label="Send message"
+                  onClick={send}
+                  disabled={!text.trim()}
+                >
+                  <SendIcon size={18} />
+                </button>
+              </div>
             </div>
           </>
         )}

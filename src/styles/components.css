@@ -513,17 +513,20 @@
 .chat-dock-bubble--them { background: var(--bg-alt); color: var(--ink); border-radius: 16px 16px 16px 4px; }
 .chat-dock-input-row {
   display: flex;
-  align-items: flex-end;
-  gap: 10px;
   padding: 14px;
   border-top: 1px solid var(--border);
   flex-shrink: 0;
 }
-.chat-dock-input {
+.chat-dock-input-wrap {
+  position: relative;
   flex: 1;
+  display: flex;
+}
+.chat-dock-input {
+  width: 100%;
   border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 10px 14px;
+  border-radius: 18px;
+  padding: 10px 46px 10px 14px;
   font-size: 14.5px;
   font-family: var(--font);
   resize: none;
@@ -533,16 +536,20 @@
   max-height: 96px;
 }
 .chat-dock-send {
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
   background: var(--accent);
   color: #fff;
   border: none;
   border-radius: 999px;
-  padding: 10px 18px;
-  font-size: 14px;
-  font-weight: 600;
+  padding: 0;
   cursor: pointer;
-  font-family: var(--font);
-  flex-shrink: 0;
+  transition: background 140ms ease;
 }
 .chat-dock-send[disabled] { background: var(--border); color: var(--ink-faint); cursor: default; }
 

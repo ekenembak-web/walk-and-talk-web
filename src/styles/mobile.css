@@ -644,16 +644,20 @@
 .m-chat-bubble--them { background: var(--card-bg); color: var(--ink); border: 1px solid var(--border); border-bottom-left-radius: 6px; }
 .m-chat-input-row {
   display: flex;
-  gap: 8px;
   padding: 10px 16px;
   border-top: 1px solid var(--border);
   background: var(--bg);
   flex-shrink: 0;
 }
-.m-chat-input {
+.m-chat-input-wrap {
+  position: relative;
   flex: 1;
-  padding: 10px 14px;
-  border-radius: 14px;
+  display: flex;
+}
+.m-chat-input {
+  width: 100%;
+  padding: 10px 46px 10px 14px;
+  border-radius: 18px;
   border: 1px solid var(--border);
   background: var(--card-bg);
   color: var(--ink);
@@ -664,18 +668,21 @@
   max-height: 96px;
   line-height: 1.4;
 }
-.m-chat-input-row { align-items: flex-end; }
 .m-chat-send {
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
   background: var(--accent);
   color: #fff;
   border: none;
   border-radius: 999px;
-  padding: 0 20px;
-  font-size: 14px;
-  font-weight: 600;
+  padding: 0;
   cursor: pointer;
-  font-family: var(--font);
-  flex-shrink: 0;
+  transition: background 140ms ease;
 }
 .m-chat-send[disabled] { background: var(--border); color: var(--ink-faint); cursor: default; }
 

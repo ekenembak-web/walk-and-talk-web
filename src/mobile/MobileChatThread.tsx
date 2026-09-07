@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useApp } from "../state/store";
 import { avatarUri } from "../lib/avatar";
+import { SendIcon } from "../components/icons";
 
 /**
  * Full-screen mobile chat. Opens for a single recipient — from "Request to
@@ -66,17 +67,24 @@ export function MobileChatThread() {
       </div>
 
       <div className="m-chat-input-row">
-        <textarea
-          className="m-chat-input"
-          rows={1}
-          placeholder="Message…"
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
-        />
-        <button className="m-chat-send" disabled={!draft.trim() || sending} onClick={send}>
-          Send
-        </button>
+        <div className="m-chat-input-wrap">
+          <textarea
+            className="m-chat-input"
+            rows={1}
+            placeholder="Message…"
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
+          />
+          <button
+            className="m-chat-send"
+            aria-label="Send message"
+            disabled={!draft.trim() || sending}
+            onClick={send}
+          >
+            <SendIcon size={18} />
+          </button>
+        </div>
       </div>
     </div>
   );
