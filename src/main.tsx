@@ -8,7 +8,6 @@ import "./styles/mobile.css";
 import "./app/app.css";
 import "./listener/listener.css";
 import "./moderator/moderator.css";
-import "./dev/dev-switcher.css";
 import App from "./App.tsx";
 
 createRoot(document.getElementById("root")!).render(
