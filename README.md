@@ -29,7 +29,8 @@ accordingly, per the handoff.
 
 `WebShell` splits by viewport (`useIsMobile`, 768px):
 
-- **`src/desktop/`** — persistent header, 9 pages, `Walk&Talk.dc.html`
+- **`src/desktop/`** — persistent header, 9 pages, bottom-right `ChatDock`,
+  `Walk&Talk.dc.html`
 - **`src/mobile/`** — hamburger drawer, 11 pages, home is the welcome screen,
   `#get-involved` lives on `/explore` (not `/`), community cards are
   display-only, `Walk&Talk Mobile.dc.html`
@@ -154,7 +155,10 @@ public/assets/         section + activity photography (licensed stock — verify
 
 ## What works
 
-- **Welcome overlay** — first visit only, dismissal persisted (`localStorage`)
+- **Welcome overlay** — shown once per browser session (`sessionStorage`); a
+  new tab/session shows it again, signing in or dismissing hides it
+- **Session** — sign-in persists across reload (`localStorage: wt.session`);
+  logging out clears it and brings the welcome screen back
 - **Theme** — light/dark, follows OS by default, toggle persisted
 - **Account gating** — browsing is open; an account is required at the point of
   commitment (message, application submit, Messages nav). `requireAccount()` in
@@ -164,12 +168,13 @@ public/assets/         section + activity photography (licensed stock — verify
   activity panel
 - **Applications** — listener + host forms with the prototype's validation
   (disabled until required fields + agreement), success state, photo preview
-- **Messages** — composer, canned auto-reply after 3.5s, unread badge,
-  conversations persisted to `localStorage`. On mobile web, tapping an existing
-  conversation opens a **full-screen chat thread** (`MobileChatThread`) with
-  the real message history and a reply box, instead of the single-message
-  composer — matching the listener and app surfaces. Starting a brand-new
-  conversation (from Find or a profile) still goes through the composer.
+- **Messages** — canned auto-reply after 3.5s, unread badge, conversations
+  (with full message history) persisted to `localStorage`. Messaging a single
+  recipient opens a real chat thread: a **docked chat widget** on desktop
+  (`ChatDock`, bottom-right, minimise / close) and a **full-screen chat thread**
+  on mobile web (`MobileChatThread`) — both with history and a reply box,
+  matching the listener and app surfaces. The multi-recipient composer
+  (`ComposerModal`) only appears when more than one recipient is selected.
 - **Modals** — Escape to close, backdrop click, focus move-in + basic trap
 - **App shell (`/app`)** — welcome overlay, 5-tab bar, bottom sheets, threaded
   chat (tab bar hides in a thread), heart-toggled favorites, guest vs signed-in
@@ -194,13 +199,13 @@ public/assets/         section + activity photography (licensed stock — verify
 | Item | Status |
 | --- | --- |
 | `i.pravatar.cc` avatars | still wired (`STOCK_AVATARS` in `people.ts`) — flip to `false` to use the initials fallback. Replace with real headshots before launch. |
-| Auth session | in-memory only; lost on reload. Real session = backend. |
+| Auth session | persisted to `localStorage` (`wt.session`) so a reload keeps you signed in — a client-side stand-in for a real backend session/token. |
 | Route guards | only nav *clicks* gate `/messages`; a direct URL is not gated. Add a guard when real auth lands. |
 | Listener card | `role="button"` wrapper contains a `Request to talk` / `Message` button (mirrors the prototype). Revisit in an a11y pass. |
 | Mobile composer multi-select | store supports `composerTo: string[]`; the mobile find grid opens it one recipient at a time (as the prototype's buttons do). Wire a select-multiple affordance if the product wants it. |
 | Shell switch | `/app/*` → app shell; everything else → web shell (desktop/mobile by 768px). Mobile-only routes (`/explore`, `/howitworks`) redirect to their desktop equivalents on wide screens. |
 | App data | `src/app/data.ts` is a separate copy (app listeners have no `language`; activities differ). Unify with `src/data/people.ts` when surfaces merge — handoff known gap #6. |
-| App deep-linking | the app uses in-memory tab/sheet state, so `/app` is the only URL — refresh returns to Home. Add nested routes if deep links matter. Same for `/listener` and `/listener/app`. |
+| App deep-linking | the app uses in-memory tab/sheet state, so `/app` is the only URL. The active tab is remembered for the session (`sessionStorage: wt.app.tab`) so a refresh stays put, but sheets and threads reset. Add nested routes if real deep links matter. Same for `/listener` and `/listener/app`. |
 | Listener / moderator persistence | none — both keep everything in memory (session-only). Wire to the backend / add `localStorage` if a refresh should survive. |
 | Role switching | no login/role system yet — the five route trees stand in for it. When real auth lands, they collapse into role-based routing after login, per the handoff. `LISTENER_NAME` / `MODERATOR_NAME` are hardcoded in the respective `data.ts`. |
 | Listener app tab icons | the "Requests" and "Chats" glyphs are both chat-bubble-ish. Swap for a clearer icon set. |

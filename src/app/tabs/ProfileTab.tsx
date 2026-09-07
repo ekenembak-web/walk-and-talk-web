@@ -38,6 +38,10 @@ export function ProfileTab() {
             <span>Become a Listener</span>
             <span className="a-menu-chevron">›</span>
           </button>
+          <button className="a-menu-row" onClick={() => shell.setTab("find")}>
+            <span>Find a Listener</span>
+            <span className="a-menu-chevron">›</span>
+          </button>
           <button className="a-menu-row" onClick={() => shell.openSheet("host")}>
             <span>Become a Host</span>
             <span className="a-menu-chevron">›</span>
@@ -95,7 +99,7 @@ export function ProfileTab() {
             <span className="a-menu-chevron">›</span>
           </button>
           {app.signedIn && (
-            <button className="a-menu-row" onClick={app.logOut}>
+            <button className="a-menu-row" onClick={shell.logOut}>
               <span className="a-menu-danger">Log out</span>
             </button>
           )}

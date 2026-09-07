@@ -16,8 +16,15 @@ import * as api from "../data/api";
  * ------------------------------------------------------------------ */
 type ThemeOverride = "light" | "dark" | null;
 const THEME_KEY = "wt.theme";
-const WELCOME_KEY = "wt.welcomeDismissed";
 const CONVOS_KEY = "wt.conversations";
+const SESSION_KEY = "wt.session"; // localStorage — sign-in survives a reload
+const WELCOMED_KEY = "wt.welcomed"; // sessionStorage — welcome shows once per browser session
+
+interface StoredSession {
+  signedIn: boolean;
+  userName: string;
+  userEmail: string;
+}
 
 function readStored<T>(key: string, fallback: T): T {
   try {
@@ -32,6 +39,28 @@ function writeStored(key: string, value: unknown) {
     localStorage.setItem(key, JSON.stringify(value));
   } catch {
     /* private mode / disabled storage — ignore */
+  }
+}
+function removeStored(key: string) {
+  try {
+    localStorage.removeItem(key);
+  } catch {
+    /* ignore */
+  }
+}
+function sessionFlag(key: string): boolean {
+  try {
+    return sessionStorage.getItem(key) === "1";
+  } catch {
+    return false;
+  }
+}
+function setSessionFlag(key: string, on: boolean) {
+  try {
+    if (on) sessionStorage.setItem(key, "1");
+    else sessionStorage.removeItem(key);
+  } catch {
+    /* ignore */
   }
 }
 
@@ -129,18 +158,24 @@ export function AppProvider({
   /* language */
   const [language, setLanguage] = useState("English");
 
-  /* auth */
-  const [signedIn, setSignedIn] = useState(false);
-  const [userName, setUserName] = useState("");
-  const [userEmail, setUserEmail] = useState("");
+  /* auth — restored from a persisted session so a reload keeps you signed in */
+  const storedSession = readStored<StoredSession | null>(SESSION_KEY, null);
+  const [signedIn, setSignedIn] = useState(!!storedSession?.signedIn);
+  const [userName, setUserName] = useState(storedSession?.userName ?? "");
+  const [userEmail, setUserEmail] = useState(storedSession?.userEmail ?? "");
 
-  /* welcome */
+  /* composer / chat recipients (empty = no chat open) */
+  const [composerTo, setComposerTo] = useState<string[]>([]);
+  const composerToRef = useRef<string[]>(composerTo);
+  composerToRef.current = composerTo;
+
+  /* welcome — shown once per browser session (or after logout), not per reload */
   const [welcomeOpen, setWelcomeOpen] = useState(
-    () => !readStored<boolean>(WELCOME_KEY, false),
+    () => !storedSession?.signedIn && !sessionFlag(WELCOMED_KEY),
   );
   const dismissWelcome = useCallback(() => {
     setWelcomeOpen(false);
-    writeStored(WELCOME_KEY, true);
+    setSessionFlag(WELCOMED_KEY, true);
   }, []);
 
   /* auth modal + pending resume action */
@@ -187,6 +222,12 @@ export function AppProvider({
     setUserEmail(result.email);
     setWelcomeOpen(false);
     setAuthOpen(false);
+    setSessionFlag(WELCOMED_KEY, true);
+    writeStored(SESSION_KEY, {
+      signedIn: true,
+      userName: result.userName,
+      userEmail: result.email,
+    } satisfies StoredSession);
     const resume = pendingAction.current;
     pendingAction.current = null;
     if (resume) setTimeout(resume, 60);
@@ -196,6 +237,10 @@ export function AppProvider({
     setSignedIn(false);
     setUserName("");
     setUserEmail("");
+    setComposerTo([]);
+    removeStored(SESSION_KEY);
+    setSessionFlag(WELCOMED_KEY, false);
+    setWelcomeOpen(true);
   }, []);
 
   /* conversations */
@@ -216,16 +261,16 @@ export function AppProvider({
     setConversations((cs) => cs.map((c) => (c.name === name ? { ...c, unread: false } : c)));
   }, []);
 
-  const [composerTo, setComposerTo] = useState<string[]>([]);
   const openComposerFor = useCallback(
     (name: string, opts?: { append?: boolean }) => {
-      requireAccount(() =>
+      requireAccount(() => {
+        markConversationRead(name);
         setComposerTo((cur) =>
           opts?.append ? (cur.includes(name) ? cur : [...cur, name]) : [name],
-        ),
-      );
+        );
+      });
     },
-    [requireAccount],
+    [requireAccount, markConversationRead],
   );
   const closeComposer = useCallback(() => setComposerTo([]), []);
 
@@ -245,7 +290,9 @@ export function AppProvider({
       });
       return [...updated, ...rest];
     });
-    setComposerTo([]);
+    // A single-recipient chat stays open (desktop dock / mobile thread);
+    // a multi-recipient send closes back to the list.
+    if (names.length !== 1) setComposerTo([]);
     // Staggered canned replies, one per recipient — appended to that thread's history.
     names.forEach((name, i) => {
       window.setTimeout(async () => {
@@ -256,8 +303,10 @@ export function AppProvider({
             if (idx < 0) return cs;
             const conv = cs[idx];
             const messages = [...conv.messages, { from: "them" as const, text: reply, when: "Just now" }];
+            // If that chat is still open, the reader sees it — don't flag unread.
+            const stillOpen = composerToRef.current.includes(name);
             const rest = cs.filter((_, i2) => i2 !== idx);
-            return [{ ...conv, last: reply, when: "Just now", unread: true, messages }, ...rest];
+            return [{ ...conv, last: reply, when: "Just now", unread: !stillOpen, messages }, ...rest];
           });
         }, 3500 + i * 1200);
         timers.current.push(t);

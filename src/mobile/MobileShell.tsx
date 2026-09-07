@@ -1,4 +1,7 @@
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { useApp } from "../state/store";
+import { ComposerModal } from "../components/ComposerModal";
+import { MobileChatThread } from "./MobileChatThread";
 import { MobileHeader } from "./MobileHeader";
 import { MobileFooter } from "./MobileFooter";
 import { MobileHome } from "./MobileHome";
@@ -16,7 +19,9 @@ import { MobileBecomeHostPage } from "./MobileBecomeHostPage";
 /** Seeker mobile web — hamburger drawer, 11 pages, home is the welcome screen. */
 export function MobileShell() {
   const { pathname } = useLocation();
+  const app = useApp();
   const isHome = pathname === "/";
+  const multiComposer = app.composerTo.length > 1;
   return (
     <div className="m-shell">
       <div className="m-page">
@@ -37,6 +42,9 @@ export function MobileShell() {
         </Routes>
         {!isHome && <MobileFooter />}
       </div>
+      {/* single recipient → full-screen thread; several → bottom-sheet composer */}
+      <MobileChatThread />
+      {multiComposer && <ComposerModal />}
     </div>
   );
 }

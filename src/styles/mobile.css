@@ -649,15 +649,19 @@
 }
 .m-chat-input {
   flex: 1;
-  padding: 11px 15px;
-  border-radius: 999px;
+  padding: 10px 14px;
+  border-radius: 14px;
   border: 1px solid var(--border);
   background: var(--card-bg);
   color: var(--ink);
   font-size: 14.5px;
   font-family: var(--font);
   outline: none;
+  resize: none;
+  max-height: 96px;
+  line-height: 1.4;
 }
+.m-chat-input-row { align-items: flex-end; }
 .m-chat-send {
   background: var(--accent);
   color: #fff;

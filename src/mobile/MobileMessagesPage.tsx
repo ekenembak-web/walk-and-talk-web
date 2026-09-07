@@ -1,11 +1,7 @@
-import { useState } from "react";
 import { useApp } from "../state/store";
-import { MobileChatThread } from "./MobileChatThread";
 
 export function MobileMessagesPage() {
   const app = useApp();
-  const [openName, setOpenName] = useState<string | null>(null);
-  const openConversation = openName ? app.conversations.find((c) => c.name === openName) ?? null : null;
 
   return (
     <main data-screen-label="Messages">
@@ -23,10 +19,7 @@ export function MobileMessagesPage() {
             <button
               key={c.name}
               className={`m-convo-row ${c.unread ? "m-convo-row--unread" : ""}`}
-              onClick={() => {
-                app.markConversationRead(c.name);
-                setOpenName(c.name);
-              }}
+              onClick={() => app.openComposerFor(c.name)}
             >
               <div className="m-convo-avatar">{c.name.charAt(0)}</div>
               <div style={{ minWidth: 0, flex: 1 }}>
@@ -41,10 +34,6 @@ export function MobileMessagesPage() {
           ))}
         </div>
       </section>
-
-      {openConversation && (
-        <MobileChatThread conversation={openConversation} onBack={() => setOpenName(null)} />
-      )}
     </main>
   );
 }

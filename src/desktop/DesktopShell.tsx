@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { WelcomeOverlay } from "../components/WelcomeOverlay";
+import { ChatDock } from "./ChatDock";
 import { HomePage } from "../pages/HomePage";
 import { AboutPage } from "../pages/AboutPage";
 import { FindPage } from "../pages/FindPage";
@@ -36,6 +37,7 @@ export function DesktopShell() {
         <Footer />
       </div>
       <WelcomeOverlay />
+      <ChatDock />
     </>
   );
 }

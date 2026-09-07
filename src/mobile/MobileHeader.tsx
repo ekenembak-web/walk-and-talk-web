@@ -13,10 +13,10 @@ interface Item {
 }
 
 const ITEMS: Item[] = [
-  { label: "Explore", path: "/explore", browse: true },
-  { label: "Find a Listener", path: "/find", browse: true },
   { label: "Become a Listener", path: "/become", browse: true },
+  { label: "Find a Listener", path: "/find", browse: true },
   { label: "Become a Host", path: "/host", browse: true },
+  { label: "Explore", path: "/explore", browse: true },
   { label: "Messages", path: "/messages", account: true },
   { label: "How it works", path: "/howitworks" },
   { label: "About", path: "/about" },
@@ -111,9 +111,18 @@ export function MobileHeader() {
               </button>
             );
           })}
-          <button className="m-btn m-btn--primary m-btn--block" onClick={getStarted}>
-            Get Started
-          </button>
+          {app.signedIn ? (
+            <button
+              className="m-btn m-btn--primary m-btn--block"
+              onClick={() => { setDrawer(false); app.logOut(); navigate("/"); }}
+            >
+              Log out
+            </button>
+          ) : (
+            <button className="m-btn m-btn--primary m-btn--block" onClick={getStarted}>
+              Get Started
+            </button>
+          )}
         </nav>
       )}
     </header>

@@ -5,7 +5,6 @@ import { useIsMobile } from "./lib/useIsMobile";
 import { DesktopShell } from "./desktop/DesktopShell";
 import { MobileShell } from "./mobile/MobileShell";
 import { AuthModal } from "./components/AuthModal";
-import { ComposerModal } from "./components/ComposerModal";
 import { AppShell } from "./app/AppShell";
 import { ListenerWebShell } from "./listener/ListenerWebShell";
 import { ListenerAppShell } from "./listener/ListenerAppShell";
@@ -21,14 +20,14 @@ function ScrollToTop() {
   return null;
 }
 
-/** The responsive seeker website: desktop or mobile shell by viewport, plus its modals. */
+/** The responsive seeker website: desktop or mobile shell by viewport. Each
+ *  shell renders its own chat surface (docked widget vs. full-screen thread). */
 function WebShell() {
   const mobile = useIsMobile();
   return (
     <>
       {mobile ? <MobileShell /> : <DesktopShell />}
       <AuthModal />
-      <ComposerModal />
     </>
   );
 }

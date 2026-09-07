@@ -13,7 +13,25 @@ import { SEED_THREADS, type Threads } from "./data";
 
 const FAV_KEY = "wt.app.favorites";
 const THREADS_KEY = "wt.app.threads";
-const WELCOME_KEY = "wt.app.welcomeDismissed";
+const WELCOMED_KEY = "wt.app.welcomed"; // sessionStorage — welcome shows once per browser session
+const TAB_KEY = "wt.app.tab"; // sessionStorage — reload keeps you on the same tab
+
+function sessionFlag(key: string): boolean {
+  try { return sessionStorage.getItem(key) === "1"; } catch { return false; }
+}
+function setSessionFlag(key: string, on: boolean) {
+  try { if (on) sessionStorage.setItem(key, "1"); else sessionStorage.removeItem(key); } catch { /* ignore */ }
+}
+
+const TABS: Tab[] = ["home", "find", "messages", "favorites", "profile"];
+function readTab(): Tab {
+  try {
+    const t = sessionStorage.getItem(TAB_KEY);
+    return t && (TABS as string[]).includes(t) ? (t as Tab) : "home";
+  } catch {
+    return "home";
+  }
+}
 
 function readStored<T>(key: string, fallback: T): T {
   try {
@@ -105,6 +123,9 @@ export interface AppShellApi {
   welcomeFind: () => void;
   welcomeHost: () => void;
 
+  /** Sign out and return the shell to its first-run state (home + welcome). */
+  logOut: () => void;
+
   // favorites
   favorites: string[];
   isFavorite: (id: string) => boolean;
@@ -165,7 +186,7 @@ const Ctx = createContext<AppShellApi | null>(null);
 export function AppShellProvider({ children }: { children: ReactNode }) {
   const app = useApp();
   const [s, setS] = useState<Shell>(() => ({
-    tab: "home",
+    tab: readTab(),
     homeFilter: "all",
     findTopic: "All",
     findFormat: "Any",
@@ -185,7 +206,7 @@ export function AppShellProvider({ children }: { children: ReactNode }) {
   const patch = useCallback((p: Partial<Shell>) => setS((cur) => ({ ...cur, ...p })), []);
 
   const [favorites, setFavorites] = useState<string[]>(() => readStored<string[]>(FAV_KEY, []));
-  const [welcomeOpen, setWelcomeOpen] = useState(() => !readStored<boolean>(WELCOME_KEY, false));
+  const [welcomeOpen, setWelcomeOpen] = useState(() => !app.signedIn && !sessionFlag(WELCOMED_KEY));
 
   const pendingAction = useRef<null | (() => void)>(null);
   const toastTimer = useRef<number>(0);
@@ -231,6 +252,8 @@ export function AppShellProvider({ children }: { children: ReactNode }) {
           ? await api.login({ email: input.email, password: input.password })
           : await api.signup(input);
       app.completeAuth(result);
+      setSessionFlag(WELCOMED_KEY, true);
+      setWelcomeOpen(false);
       patch({ authOpen: false });
       const resume = pendingAction.current;
       pendingAction.current = null;
@@ -242,7 +265,7 @@ export function AppShellProvider({ children }: { children: ReactNode }) {
   /* ---- welcome ---- */
   const dismissWelcome = useCallback(() => {
     setWelcomeOpen(false);
-    writeStored(WELCOME_KEY, true);
+    setSessionFlag(WELCOMED_KEY, true);
   }, []);
   const welcomeBecome = useCallback(() => {
     dismissWelcome();
@@ -257,16 +280,31 @@ export function AppShellProvider({ children }: { children: ReactNode }) {
     browseGate(() => patch({ sheets: { ...NO_SHEETS, host: true } }));
   }, [dismissWelcome, browseGate, patch]);
 
+  const logOut = useCallback(() => {
+    app.logOut();
+    setSessionFlag(WELCOMED_KEY, false);
+    setSessionFlag(TAB_KEY, false);
+    setWelcomeOpen(true);
+    patch({ tab: "home", activeThreadId: null, sheets: NO_SHEETS, langMenuOpen: false });
+  }, [app, patch]);
+
   /* ---- tabs ---- */
+  const goTab = useCallback(
+    (t: Tab) => {
+      try { sessionStorage.setItem(TAB_KEY, t); } catch { /* ignore */ }
+      patch({ tab: t, activeThreadId: null });
+    },
+    [patch],
+  );
   const setTab = useCallback(
     (t: Tab) => {
       if (t === "messages" && !app.signedIn) {
-        guestGate("message", () => patch({ tab: "messages", activeThreadId: null }));
+        guestGate("message", () => goTab("messages"));
         return;
       }
-      patch({ tab: t, activeThreadId: null });
+      goTab(t);
     },
-    [app.signedIn, guestGate, patch],
+    [app.signedIn, guestGate, goTab],
   );
 
   /* ---- favorites ---- */
@@ -395,6 +433,7 @@ export function AppShellProvider({ children }: { children: ReactNode }) {
       welcomeBecome,
       welcomeFind,
       welcomeHost,
+      logOut,
       favorites,
       isFavorite,
       toggleFavorite,
@@ -435,7 +474,7 @@ export function AppShellProvider({ children }: { children: ReactNode }) {
       submitHostApplication,
     }),
     [
-      s, setTab, patch, welcomeOpen, dismissWelcome, welcomeBecome, welcomeFind, welcomeHost,
+      s, setTab, patch, welcomeOpen, dismissWelcome, welcomeBecome, welcomeFind, welcomeHost, logOut,
       favorites, isFavorite, toggleFavorite, openThread, closeThread, setMessageDraft,
       sendThreadMessage, openActivity, closeActivity, requestSpot, openProfile, closeProfile,
       messageFromProfile, openSheet, closeSheet, toggleLangMenu, setRequestStatus,
